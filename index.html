@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="oXVuWfSUts7sBSrtHKeTJH">
+<head data-page-node-id="1DhDzYxQ8gyLrlCQCE1t6P">
+<meta charset="UTF-8" data-page-node-id="nDQX30s1tusaKIcUBPp5ZA">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="w88uLQSP6Iyni91IKHD6t7">
+<meta name="description" content="上海杉达学院计算机科学与技术专业学生个人展示平台 - 项目作品、技能特长" data-page-node-id="lAXQ7qFrswWrgntjgRg2ig">
+<title>Needyii | 个人展示平台</title>
+<style>
+  /* ═══════════════════════ 全局变量与重置 ═══════════════════════ */
+  :root {
+    --bg: #070b14;
+    --bg-soft: #0b1120;
+    --card: rgba(255, 255, 255, 0.04);
+    --card-border: rgba(255, 255, 255, 0.09);
+    --card-hover: rgba(255, 255, 255, 0.07);
+    --text: #e6edf7;
+    --text-dim: #94a3b8;
+    --text-faint: #64748b;
+    --cyan: #22d3ee;
+    --indigo: #818cf8;
+    --purple: #c084fc;
+    --gradient: linear-gradient(120deg, #22d3ee, #818cf8, #c084fc);
+    --radius: 16px;
+    --nav-h: 72px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 16px); }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: rgba(34, 211, 238, 0.35); color: #fff; }
+  a { color: inherit; text-decoration: none; }
+  ul { list-style: none; }
+  img { max-width: 100%; display: block; }
+
+  /* ═══════════════════════ 背景装饰 ═══════════════════════ */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: -2;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.5; pointer-events: none; }
+  .orb-1 { width: 480px; height: 480px; top: -160px; right: -120px; background: radial-gradient(circle, rgba(34,211,238,0.35), transparent 70%); animation: drift 14s ease-in-out infinite alternate; }
+  .orb-2 { width: 420px; height: 420px; top: 40vh; left: -160px; background: radial-gradient(circle, rgba(129,140,248,0.3), transparent 70%); animation: drift 18s ease-in-out infinite alternate-reverse; }
+  .orb-3 { width: 380px; height: 380px; bottom: -140px; right: 10vw; background: radial-gradient(circle, rgba(192,132,252,0.25), transparent 70%); animation: drift 16s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(40px, 50px) scale(1.12); } }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ═══════════════════════ 导航栏 ═══════════════════════ */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--nav-h);
+    transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+  .navbar.scrolled {
+    background: rgba(7, 11, 20, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom-color: var(--card-border);
+  }
+  .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.5px; }
+  .logo span { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nav-links { display: flex; gap: 8px; align-items: center; }
+  .nav-links a {
+    padding: 8px 14px; border-radius: 10px; font-size: 0.95rem; color: var(--text-dim);
+    transition: color 0.25s, background 0.25s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--card); }
+  .nav-links a.active { color: var(--text); background: var(--card-hover); }
+  .nav-links a.active::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--gradient); margin-right: 8px; vertical-align: middle; }
+  .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+  .hamburger span { width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ═══════════════════════ Hero ═══════════════════════ */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: calc(var(--nav-h) + 40px) 0 60px;
+    position: relative;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center; width: 100%; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 16px; border-radius: 999px;
+    background: var(--card); border: 1px solid var(--card-border);
+    color: var(--text-dim); font-size: 0.9rem; margin-bottom: 24px;
+  }
+  .hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 12px #34d399; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 900; line-height: 1.25; letter-spacing: 1px; }
+  .hero h1 .gradient-text { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .typeline { margin-top: 14px; font-size: clamp(1.1rem, 2.4vw, 1.45rem); font-weight: 600; color: var(--text-dim); min-height: 2.2em; }
+  .typeline .typed { color: var(--cyan); }
+  .typeline .cursor { display: inline-block; width: 2px; height: 1.2em; background: var(--cyan); margin-left: 4px; vertical-align: text-bottom; animation: blink 0.9s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero-desc { margin-top: 20px; color: var(--text-dim); max-width: 520px; font-size: 1.02rem; }
+  .hero-stats { display: flex; gap: 40px; margin-top: 36px; flex-wrap: wrap; }
+  .stat .num { font-size: 2rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
+  .stat .label { color: var(--text-faint); font-size: 0.88rem; margin-top: 2px; }
+  .hero-actions { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 28px; border-radius: 12px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; border: 1px solid transparent; transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+  }
+  .btn-primary { background: var(--gradient); color: #0b1120; }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(34, 211, 238, 0.3); }
+  .btn-ghost { background: var(--card); border-color: var(--card-border); color: var(--text); }
+  .btn-ghost:hover { transform: translateY(-3px); background: var(--card-hover); }
+
+  /* Hero 右侧代码卡片 */
+  .code-card {
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  .code-head { display: flex; align-items: center; gap: 8px; padding: 13px 18px; border-bottom: 1px solid var(--card-border); background: rgba(255,255,255,0.03); }
+  .code-head i { width: 12px; height: 12px; border-radius: 50%; }
+  .code-head i:nth-child(1) { background: #f87171; }
+  .code-head i:nth-child(2) { background: #fbbf24; }
+  .code-head i:nth-child(3) { background: #34d399; }
+  .code-head .file { margin-left: 10px; color: var(--text-faint); font-size: 0.82rem; font-family: Consolas, Monaco, monospace; }
+  .code-body { padding: 20px 22px 26px; font-family: Consolas, Monaco, "Courier New", monospace; font-size: 0.92rem; line-height: 1.9; overflow-x: auto; }
+  .code-body .kw { color: #c084fc; }
+  .code-body .key { color: #7dd3fc; }
+  .code-body .str { color: #86efac; }
+  .code-body .num-c { color: #fbbf24; }
+  .code-body .arr { color: #f0abfc; }
+  .code-body .p { color: #94a3b8; }
+  .code-comment { color: #475569; }
+
+  /* ═══════════════════════ 通用 Section ═══════════════════════ */
+  section { padding: 100px 0; }
+  .section-head { text-align: center; margin-bottom: 60px; }
+  .section-tag {
+    display: inline-block; font-family: Consolas, Monaco, monospace;
+    color: var(--cyan); font-size: 0.92rem; margin-bottom: 12px; letter-spacing: 1px;
+  }
+  .section-head h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); font-weight: 800; letter-spacing: 1px; }
+  .section-head p { color: var(--text-dim); margin-top: 12px; }
+
+  /* 滚动淡入动画 */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  .reveal[data-delay="1"] { transition-delay: 0.12s; }
+  .reveal[data-delay="2"] { transition-delay: 0.24s; }
+  .reveal[data-delay="3"] { transition-delay: 0.36s; }
+  .reveal[data-delay="4"] { transition-delay: 0.48s; }
+  .reveal[data-delay="5"] { transition-delay: 0.6s; }
+
+  /* ═══════════════════════ 关于我 ═══════════════════════ */
+  .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; }
+  .about-text h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 18px; }
+  .about-text h3 .gradient-text { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .about-text p { color: var(--text-dim); margin-bottom: 16px; }
+  .about-text p b { color: var(--text); }
+  .info-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 30px 32px;
+  }
+  .info-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.08); }
+  .info-row:last-child { border-bottom: none; }
+  .info-icon {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(34, 211, 238, 0.12); color: var(--cyan);
+  }
+  .info-icon svg { width: 20px; height: 20px; }
+  .info-label { color: var(--text-faint); font-size: 0.85rem; width: 3.5em; flex-shrink: 0; }
+  .info-value { color: var(--text); font-weight: 600; font-size: 0.98rem; }
+
+  /* ═══════════════════════ 特质卡片 ═══════════════════════ */
+  .traits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .trait-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 34px 28px;
+    transition: transform 0.35s, border-color 0.35s, background 0.35s;
+    position: relative; overflow: hidden;
+  }
+  .trait-card::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--gradient); opacity: 0; transition: opacity 0.35s;
+  }
+  .trait-card:hover { transform: translateY(-8px); border-color: rgba(34, 211, 238, 0.4); background: var(--card-hover); }
+  .trait-card:hover::after { opacity: 1; }
+  .trait-icon {
+    width: 54px; height: 54px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+    background: rgba(129, 140, 248, 0.14); color: var(--indigo);
+  }
+  .trait-icon svg { width: 26px; height: 26px; }
+  .trait-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; }
+  .trait-card p { color: var(--text-dim); font-size: 0.95rem; }
+
+  /* 舞蹈横幅 */
+  .dance-banner {
+    margin-top: 28px; border-radius: var(--radius);
+    padding: 38px 40px;
+    background: linear-gradient(120deg, rgba(34,211,238,0.12), rgba(129,140,248,0.14), rgba(192,132,252,0.12));
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    display: flex; align-items: center; gap: 30px; flex-wrap: wrap;
+    position: relative; overflow: hidden;
+  }
+  .dance-banner::before {
+    content: ""; position: absolute; width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(192,132,252,0.22), transparent 70%);
+    right: -60px; top: -80px; pointer-events: none;
+  }
+  .dance-icon {
+    width: 68px; height: 68px; border-radius: 18px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--gradient); color: #0b1120;
+    box-shadow: 0 10px 30px rgba(129, 140, 248, 0.4);
+  }
+  .dance-icon svg { width: 34px; height: 34px; }
+  .dance-body { flex: 1; min-width: 240px; }
+  .dance-body h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+  .dance-body p { color: var(--text-dim); font-size: 0.97rem; }
+  .dance-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+  .dance-tags span {
+    padding: 7px 16px; border-radius: 999px; font-size: 0.87rem; font-weight: 600;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); color: var(--text);
+  }
+
+  /* ═══════════════════════ 技能 ═══════════════════════ */
+  .skills-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: start; }
+  .skill { margin-bottom: 26px; }
+  .skill-head { display: flex; justify-content: space-between; margin-bottom: 9px; font-size: 0.96rem; font-weight: 600; }
+  .skill-head .skill-num { color: var(--text-faint); font-family: Consolas, Monaco, monospace; font-weight: 500; }
+  .skill-bar { height: 9px; border-radius: 999px; background: rgba(255,255,255,0.07); overflow: hidden; }
+  .skill-bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--gradient); transition: width 1.3s cubic-bezier(0.22, 1, 0.36, 1); }
+  .skill-panel {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 30px 32px;
+  }
+  .skill-panel h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .skill-panel h3 svg { width: 20px; height: 20px; color: var(--cyan); }
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tag-cloud span {
+    padding: 8px 16px; border-radius: 10px; font-size: 0.9rem;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-dim);
+    transition: 0.3s;
+  }
+  .tag-cloud span:hover { color: var(--text); border-color: rgba(34,211,238,0.5); transform: translateY(-2px); }
+  .tag-cloud span.highlight { background: rgba(34, 211, 238, 0.12); border-color: rgba(34, 211, 238, 0.45); color: var(--cyan); font-weight: 600; }
+  .panel-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 24px 0; }
+  .soft-list li { display: flex; gap: 12px; padding: 8px 0; color: var(--text-dim); font-size: 0.95rem; align-items: flex-start; }
+  .soft-list li svg { width: 18px; height: 18px; color: #34d399; flex-shrink: 0; margin-top: 5px; }
+  .soft-list li b { color: var(--text); }
+
+  /* ═══════════════════════ 项目展示 ═══════════════════════ */
+  .filter-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 44px; }
+  .filter-btn {
+    padding: 9px 22px; border-radius: 999px; cursor: pointer;
+    background: var(--card); border: 1px solid var(--card-border);
+    color: var(--text-dim); font-size: 0.93rem; font-weight: 500;
+    transition: 0.3s; font-family: inherit;
+  }
+  .filter-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+  .filter-btn.active { background: var(--gradient); color: #0b1120; font-weight: 700; border-color: transparent; }
+  .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .project-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
+  }
+  .project-card:hover { transform: translateY(-10px); border-color: rgba(34, 211, 238, 0.45); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); }
+  .project-card.hide { display: none; }
+  .project-card.pop { animation: popIn 0.5s ease both; }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.92) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .project-cover {
+    height: 130px; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .project-cover .cover-letter {
+    font-size: 3.4rem; font-weight: 900; color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    transition: transform 0.4s;
+  }
+  .project-card:hover .cover-letter { transform: scale(1.14) rotate(-4deg); }
+  .project-type {
+    position: absolute; top: 14px; right: 14px;
+    padding: 4px 12px; border-radius: 999px;
+    background: rgba(7, 11, 20, 0.55); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff; font-size: 0.78rem;
+  }
+  .cover-g1 { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
+  .cover-g2 { background: linear-gradient(135deg, #f472b6, #a855f7); }
+  .cover-g3 { background: linear-gradient(135deg, #10b981, #0ea5e9); }
+  .cover-g4 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+  .cover-g5 { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+  .cover-g6 { background: linear-gradient(135deg, #14b8a6, #22c55e); }
+  .project-body { padding: 22px 24px 24px; flex: 1; display: flex; flex-direction: column; }
+  .project-body h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 8px; }
+  .project-body p { color: var(--text-dim); font-size: 0.92rem; flex: 1; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .tags span {
+    padding: 4px 12px; border-radius: 6px; font-size: 0.78rem;
+    font-family: Consolas, Monaco, monospace;
+    background: rgba(34, 211, 238, 0.09); color: #67e8f9;
+    border: 1px solid rgba(34, 211, 238, 0.22);
+  }
+  .project-links { display: flex; gap: 16px; margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); }
+  .project-links a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.88rem; font-weight: 600; color: var(--text-dim); transition: color 0.25s;
+  }
+  .project-links a svg { width: 15px; height: 15px; }
+  .project-links a:hover { color: var(--cyan); }
+  .projects-note { text-align: center; margin-top: 36px; color: var(--text-faint); font-size: 0.92rem; }
+
+  /* ═══════════════════════ 联系我 ═══════════════════════ */
+  .contact-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-bottom: 44px; }
+  .contact-card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 28px 22px; text-align: center;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .contact-card:hover { transform: translateY(-6px); border-color: rgba(34, 211, 238, 0.45); }
+  .contact-icon {
+    width: 52px; height: 52px; margin: 0 auto 16px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(129, 140, 248, 0.14); color: var(--indigo);
+  }
+  .contact-icon svg { width: 24px; height: 24px; }
+  .contact-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .contact-card p { color: var(--text-dim); font-size: 0.88rem; word-break: break-all; }
+  .contact-cta { text-align: center; }
+  .contact-cta p { color: var(--text-dim); margin-bottom: 24px; }
+
+  /* ═══════════════════════ 页脚 & 回到顶部 ═══════════════════════ */
+  footer { border-top: 1px solid var(--card-border); padding: 34px 0; text-align: center; color: var(--text-faint); font-size: 0.9rem; }
+  footer .heart { color: #f472b6; }
+  #backTop {
+    position: fixed; right: 26px; bottom: 26px; z-index: 90;
+    width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--card-border);
+    background: rgba(13, 20, 36, 0.9); color: var(--text); font-size: 1.2rem; cursor: pointer;
+    opacity: 0; pointer-events: none; transition: 0.3s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #backTop.show { opacity: 1; pointer-events: auto; }
+  #backTop:hover { background: var(--gradient); color: #0b1120; border-color: transparent; }
+
+  /* ═══════════════════════ 响应式 ═══════════════════════ */
+  @media (max-width: 960px) {
+    .hero-grid, .about-grid, .skills-grid { grid-template-columns: 1fr; }
+    .hero-grid { gap: 40px; }
+    .code-card { max-width: 560px; margin: 0 auto; }
+    .traits-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    .contact-cards { grid-template-columns: repeat(2, 1fr); }
+    .hero { min-height: auto; }
+  }
+  @media (max-width: 640px) {
+    .nav-links {
+      position: fixed; top: var(--nav-h); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 4px;
+      background: rgba(7, 11, 20, 0.97); backdrop-filter: blur(14px);
+      padding: 16px 24px 22px; border-bottom: 1px solid var(--card-border);
+      display: none;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 12px 16px; }
+    .hamburger { display: flex; }
+    section { padding: 72px 0; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .contact-cards { grid-template-columns: 1fr; }
+    .hero-stats { gap: 26px; }
+    .dance-banner { padding: 28px 24px; }
+  }
+</style>
+</head>
+<body data-page-node-id="WMQc400VetpYwPyiMNmdXO">
+
+<!-- 背景装饰 -->
+<div class="bg-grid" data-page-node-id="tLvIIWL7lDMbXfrcvCVll5"></div>
+<div class="bg-orb orb-1" data-page-node-id="h813MwywnIbFyZ9MSXT0ia"></div>
+<div class="bg-orb orb-2" data-page-node-id="VHHd3HHa4Dh4tjRHGYf36c"></div>
+<div class="bg-orb orb-3" data-page-node-id="cARqWIKBX9hdtIrcPKRehS"></div>
+
+<!-- ═════════════════ 导航栏 ═════════════════ -->
+<header class="navbar" id="navbar" data-page-node-id="AnYcc3YucXiBpYVWP3DcdC">
+  <div class="nav-inner" data-page-node-id="oRADgliahnHczxst8RWsHf">
+    <!-- 改这里：把「Needyii」换成你的姓名或昵称 -->
+    <a href="#home" class="logo" data-page-node-id="DfI6ovObxC4vD9yHK1uMBq">Needyii<span data-page-node-id="4NW4XFoR5oKVBCNoUaVoWv">.dev</span></a>
+    <nav class="nav-links" id="navLinks" data-page-node-id="aBQphRcpqClTEo2BthHS7G">
+      <a href="#home" class="active" data-page-node-id="oqkB0m1Na9syNr5YuMX1q0">首页</a>
+      <a href="#about" data-page-node-id="HtaaCIoFDprAatvYcypuAM">关于我</a>
+      <a href="#skills" data-page-node-id="hybkzA2qheXx1bYjAiSMm0">技能特长</a>
+      <a href="#projects" data-page-node-id="XfBPvgVoD3XZ9qYTRAALqs">项目作品</a>
+      <a href="#contact" data-page-node-id="1PYZsFbavAOG8aGaDbEW9M">联系我</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="菜单" data-page-node-id="X6YDrX6H0KL5c4PmAOFJqY">
+      <span data-page-node-id="r90ED45Yih0g6vqPGlpgjH"></span><span data-page-node-id="f3jljx9lVdGeNUxm0rxZQV"></span><span data-page-node-id="59PA1SSLVuOwn5gaqcBgNP"></span>
+    </button>
+  </div>
+</header>
+
+<main data-page-node-id="ICepwMqomf1mZlCNowgwnJ">
+  <!-- ═════════════════ 首屏 ═════════════════ -->
+  <section class="hero" id="home" data-page-node-id="bZAUgHxhx10RT7TkM8by2u">
+    <div class="container hero-grid" data-page-node-id="3VFDGQqvlfW4kQbzCa0zvh">
+      <div class="hero-left" data-page-node-id="EfXGZkqGO0yvKVB89oDhFt">
+        <div class="hero-badge" data-page-node-id="6sYHTRsgts5Cne9XMkiwop"><span class="dot" data-page-node-id="ZPd7rNumeuO43fv6QBScC5"></span>上海杉达学院 · 计算机科学与技术专业</div>
+        <!-- 改这里：姓名占位，替换为你的真实姓名 -->
+        <h1 data-page-node-id="65S0cVGpIvdbCgH6b2KXhd">你好，我是<br data-page-node-id="Q0L3LJFQ3WuAQJymmp8n8h"><span class="gradient-text" data-page-node-id="CCHsUyAu9e1aFK3GtuK8JB">Needyii</span></h1>
+        <div class="typeline" data-page-node-id="A3fcXUJMOapNYA8pHujfmx"><span class="typed" id="typewriter" data-page-node-id="8TN3BVwfY3rdqDJPQg394n"></span><span class="cursor" data-page-node-id="8CUq1Tqb8rO98fdULW5gn7"></span></div>
+        <p class="hero-desc" data-page-node-id="oGHCTKW1Z0IcjC1vMO7goL">
+          一名来自上海的 19 岁计算机专业学生，做事认真负责、执行高效、肯钻研。
+          白天在代码里解决问题，舞台上用舞蹈表达自我 —— 相信热爱与坚持能把每件事做好。
+        </p>
+        <div class="hero-stats" data-page-node-id="ULJAJl7YSbsOvNgVYYSBLP">
+          <div class="stat" data-page-node-id="Nl39DgIZTkF3xwxkym5E9Z"><div class="num" data-count="19" data-suffix="" data-page-node-id="D2owDNehlhdbSKGXsbJ9G6">0</div><div class="label" data-page-node-id="vcrlqG9gXdNBqj5JGz3NVZ">岁 · 大学生活正当时</div></div>
+          <div class="stat" data-page-node-id="uqpbSyGDDI1E1NHO4XELoB"><div class="num" data-count="6" data-suffix="+" data-page-node-id="HQqB5lBC6gOSb9Duwld5Lc">0</div><div class="label" data-page-node-id="Wm9xTrgXeTwVV886LXqNKk">项目作品</div></div>
+          <div class="stat" data-page-node-id="yFEGDY3JxFBkFu50leCgVu"><div class="num" data-count="10" data-suffix="+" data-page-node-id="wWPhsfGOrUcUE31mo9XvLc">0</div><div class="label" data-page-node-id="5mVZc4XX8qQLTAkIRUEDFE">技术栈积累</div></div>
+          <div class="stat" data-page-node-id="6o5kPICZsTIF5bPy1nHEKN"><div class="num" data-count="2" data-suffix=" 年" data-page-node-id="KoZu6a9OelsB5WdV6tHpe1">0</div><div class="label" data-page-node-id="w0vQ2R3WqN00DoCvLEHDeU">编程经验</div></div>
+        </div>
+        <div class="hero-actions" data-page-node-id="ZEkIxhFtF76gFoTMGF0qng">
+          <a href="#projects" class="btn btn-primary" data-page-node-id="GC9y58t8PEwkHqBfrIdRC4">查看我的项目</a>
+          <a href="#contact" class="btn btn-ghost" data-page-node-id="GVslFYBwUnkNxh0XFyPyUH">联系我</a>
+        </div>
+      </div>
+      <div class="hero-right" data-page-node-id="ddVrMQsAj52DwetqwVBhUr">
+        <div class="code-card" data-page-node-id="yImBxEnIbjldIW9VtcmA6q">
+          <div class="code-head" data-page-node-id="T2SSIDyqow9qQ8Y5pc5n0J"><i data-page-node-id="9NE5ITw9D5YAxFedmrywy2"></i><i data-page-node-id="dHAeOwxUOwcvLOCBwxev1m"></i><i data-page-node-id="MOyLUWHeB2RKlLH3VMjMcz"></i><span class="file" data-page-node-id="hyywmGBm9L8cyDofCYCcAy">about_me.js</span></div>
+          <div class="code-body" data-page-node-id="zuEPgjMMP4BOUD2lkQTEcM">
+<span class="kw" data-page-node-id="phQFwRfEUwbuc93J20jGJN">const</span> <span class="key" data-page-node-id="raVzN5pJTWuOTOuOEWG3uM">me</span> <span class="p" data-page-node-id="HnJrICK8njQyChQtJCErO8">=</span> <span class="p" data-page-node-id="ocQtgGJ157kxG9wi9N6BT6">{</span><br data-page-node-id="2WlAjzrvFNG66f7gHj4fGR">
+&nbsp;&nbsp;<span class="key" data-page-node-id="6m2S6YGR5GhclwehnIhgxS">name</span><span class="p" data-page-node-id="vfP6xBaJRwLiUUmL7WGliL">:</span> <span class="str" data-page-node-id="CudiwPAsUfV3gLJzKWWHwJ">"Needyii"</span><span class="p" data-page-node-id="gngFJBZTVlZZlhph5yZVh9">,</span><br data-page-node-id="J1W2JA8qlXkJwlGDhT7fAa">
+&nbsp;&nbsp;<span class="key" data-page-node-id="IlM0NQEqEUGCdaLhJxrIzf">city</span><span class="p" data-page-node-id="16H3o5go0IDwPZQ5Jh2AmZ">:</span> <span class="str" data-page-node-id="uRNlsHE12I1dF3lOiluMf6">"上海"</span><span class="p" data-page-node-id="yJap0KcgpzMg2dD1gXfvl7">,</span><br data-page-node-id="E8l0ZuS79I3Oxprf59zUsT">
+&nbsp;&nbsp;<span class="key" data-page-node-id="pRRdpneLEk2saq19ZKpNr8">age</span><span class="p" data-page-node-id="6wxRcG8J9fljcHtX95bb80">:</span> <span class="num-c" data-page-node-id="dbe71PvV5Adoo39k4sDEtO">19</span><span class="p" data-page-node-id="wiDEcSCEsF2Zq1WzBnfhsa">,</span><br data-page-node-id="smScLDOFfbYkdShC22zuvn">
+&nbsp;&nbsp;<span class="key" data-page-node-id="lk5AGoArqOr4o2C5dGLk9r">school</span><span class="p" data-page-node-id="iyNWAG0QHuciLWXHuDtrTL">:</span> <span class="str" data-page-node-id="F0NRkL8eEcmJvAQaUx1iRN">"上海杉达学院"</span><span class="p" data-page-node-id="EZcsmkMOQF6qHAOzQHbD6I">,</span><br data-page-node-id="lNdzBfqVEjNhKq0kPaHqY1">
+&nbsp;&nbsp;<span class="key" data-page-node-id="obV9r9GbqFWjwACIZ1wFsP">major</span><span class="p" data-page-node-id="hruWUv2Dymz4DRZauB8q1z">:</span> <span class="str" data-page-node-id="WkDeIyDhpr3uAN58ZjgXLx">"计算机科学与技术"</span><span class="p" data-page-node-id="cy8UIXUDmy4Vhrd3dTXC2G">,</span><br data-page-node-id="DBMcqGef30bUSK5IC561ny">
+&nbsp;&nbsp;<span class="key" data-page-node-id="AQlSDDZk1lbE8WBoSknAwx">talent</span><span class="p" data-page-node-id="sgiudZJcIX9Jjz7n8uNjKl">:</span> <span class="p" data-page-node-id="97O9zBH7TaP5c6H8W36jJv">[</span><span class="str" data-page-node-id="BVfyPxJUn0wdOYZjVEZh8Z">"跳舞"</span><span class="p" data-page-node-id="UOvpwwXJx0BH5ohI97ba8U">,</span> <span class="str" data-page-node-id="DeTnAL7FI17zUvOJvzmAmi">"编程"</span><span class="p" data-page-node-id="WK2kNH6CQYT8YKabPEAHqG">],</span><br data-page-node-id="zaBbJ91PYnzxeFeQnDPrud">
+&nbsp;&nbsp;<span class="key" data-page-node-id="scyZNhUot1SZqY001vbrBr">traits</span><span class="p" data-page-node-id="rXnlOK8KR2VhiYM366Tu34">:</span> <span class="p" data-page-node-id="O4VYdDP3aLEhJxVQtTLBwp">[</span><span class="str" data-page-node-id="pGt1f0QF7nfDaKQcNBUTUR">"认真负责"</span><span class="p" data-page-node-id="64TxDrALQ0l11VBEYu5o23">,</span> <span class="str" data-page-node-id="OzM9t8hiNyzZ2n3ydHt48p">"高效"</span><span class="p" data-page-node-id="ZztANLmZXR1PDh7TnDGaWo">,</span> <span class="str" data-page-node-id="CkRudX7PVIyP1npCgpYSgk">"肯钻研"</span><span class="p" data-page-node-id="r11C7XK0alYGUhB3Fw1b61">],</span><br data-page-node-id="56GYU5DiYWmYroISCBM1af">
+&nbsp;&nbsp;<span class="key" data-page-node-id="SWpe4uRJGP2C1FtfsMO7SS">motto</span><span class="p" data-page-node-id="QnpJ7ooijSvA3v90RuAy7c">:</span> <span class="str" data-page-node-id="mL2jDCm42SfDLrBBSriXVE">"用热爱与代码，认真做好每件事"</span><br data-page-node-id="v6olNmrlGrwEagmQw3jx22">
+<span class="p" data-page-node-id="BszXW9vwvjbRJMmmkFOYr8">};</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════ 关于我 ═════════════════ -->
+  <section id="about" data-page-node-id="aR9eCdzUfto7HiIAg1yfhz">
+    <div class="container" data-page-node-id="YUEavyAY0TrvZtc7PZqIXL">
+      <div class="section-head reveal" data-page-node-id="3IEuf8pN94u2Fb0bQPTS2T">
+        <span class="section-tag" data-page-node-id="JAux2jqpMS9jjSJis39Vum">// 关于我</span>
+        <h2 data-page-node-id="ziqH8kOHp54RPis8rzfb5a">认识一下我</h2>
+        <p data-page-node-id="8hCStoLyxCZOUdoFTBQwzB">基本信息与自我介绍</p>
+      </div>
+      <div class="about-grid" data-page-node-id="7uGGI62YgUwHr73DrQt3fV">
+        <div class="about-text reveal" data-page-node-id="n2Nru3fV4S76kjmLT36jjj">
+          <h3 data-page-node-id="8agKAVwrPXr1qQHjDGLc8P">来自上海的 <span class="gradient-text" data-page-node-id="st8SjtQ1QXeIwEz70IpTJN">计算机学子</span></h3>
+          <p data-page-node-id="npyGqwzUbZhwoqAr16B2WA">
+            我是上海杉达学院计算机科学与技术专业的学生，今年 19 岁，出生并成长于上海。
+            从第一次接触编程开始，我就被「用代码把想法变成现实」的过程深深吸引。
+          </p>
+          <p data-page-node-id="kG148pHPyzvez8TFWqwOVm">
+            在学习中，我始终保持<b data-page-node-id="irymClRNC5WrvvcS7APUCU">认真负责</b>的态度——布置的任务一定善始善终；
+            讲究<b data-page-node-id="NV9Uiko2zsKub6AFtaIRkU">方法和效率</b>——合理规划时间，交付又快又稳；
+            遇到难题<b data-page-node-id="2xX3cCo6KsTafiQl0LgbxA">肯钻研</b>——啃文档、查资料、看源码，不弄明白绝不罢休。
+          </p>
+          <p data-page-node-id="oevPbWwqfFLWOOI7eVV3kZ">
+            除了代码，<b data-page-node-id="LLTyV3Hk6va9XejL0i1sxI">舞蹈是我的特长</b>。排练教会我团队协作与坚持，舞台教会我自信与表达。
+            我相信，技术与热爱并不冲突，它们让我成为更完整的自己。
+          </p>
+        </div>
+        <div class="info-card reveal" data-delay="1" data-page-node-id="FAfDmYgsA2RIkjr1Qk0Uju">
+          <div class="info-row" data-page-node-id="kQmfZgpBVUObHDhm5AzNm5">
+            <div class="info-icon" data-page-node-id="C2A0g1TG2FXVgGQz4PTIgZ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="S0fYcmwYzxnn2qzgAt5MvQ"><circle cx="12" cy="7" r="4" data-page-node-id="faonDCHVqHoxBg4nfTo6D1"/><path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" data-page-node-id="RiLdw6hDy54jvtHy962NBB"/></svg></div>
+            <span class="info-label" data-page-node-id="3Adl7iztsuWlO2vm5FD4Rl">姓名</span><span class="info-value" data-page-node-id="AgpAvouSJnoWKaXxkNpx3B">Needyii</span>
+          </div>
+          <div class="info-row" data-page-node-id="izmEYuW1WsmEdAsQO3y1Gb">
+            <div class="info-icon" data-page-node-id="GHeBzXr811PEMD0W2JFX7f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="fEReMGc5Ly0oyTE9gbEejn"><rect x="3" y="4" width="18" height="18" rx="2" data-page-node-id="rNvnuUNIwoCj1jpVQSKuS0"/><line x1="16" y1="2" x2="16" y2="6" data-page-node-id="pYwMFOmMGHTpmBQZMzEIqn"/><line x1="8" y1="2" x2="8" y2="6" data-page-node-id="C2M6ptlhF3FwKuETkLn6Nq"/><line x1="3" y1="10" x2="21" y2="10" data-page-node-id="bQ24FbtXSBFJ8wg2EKGi8K"/></svg></div>
+            <span class="info-label" data-page-node-id="GVERYICsxLLhZHAeT9IMpO">年龄</span><span class="info-value" data-page-node-id="eInhhakF0fcgEDttlEKNNK">19 岁</span>
+          </div>
+          <div class="info-row" data-page-node-id="5hICTnGvQpFVKgbYoRN5to">
+            <div class="info-icon" data-page-node-id="gj8zRp1mbsGddGJqSWwi8d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="OSsLe7m31yCMC8lDLEGj9w"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" data-page-node-id="8IxRoypv72pnJWxhoY2a9y"/><circle cx="12" cy="10" r="3" data-page-node-id="EzpG2sBMEtwk2cNYGKyvvs"/></svg></div>
+            <span class="info-label" data-page-node-id="CAlCIcLHFtTY5go9d1pGCw">坐标</span><span class="info-value" data-page-node-id="ZWLyBsUIpgx9qbIQbomEHG">上海</span>
+          </div>
+          <div class="info-row" data-page-node-id="zQ7SWyT6kIzU34HCgU9BI1">
+            <div class="info-icon" data-page-node-id="hh0sU3A60XcnTVkBGOCF27"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="y31aDoTZkCrpZXD9GXl8aT"><path d="M22 10L12 5 2 10l10 5 10-5z" data-page-node-id="ZnoP3YK3phLWLAYMXvm4un"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5" data-page-node-id="Rr1qV0sKvu2v46wSn96QiY"/></svg></div>
+            <span class="info-label" data-page-node-id="O9SbGj8MuTsCCNdoRz0tNJ">学校</span><span class="info-value" data-page-node-id="oMumUXRs6dznh4B01yn13x">上海杉达学院</span>
+          </div>
+          <div class="info-row" data-page-node-id="HJ5t79mWvThA4SCn6m1x9I">
+            <div class="info-icon" data-page-node-id="rkumKtAhfn46EcgKB61FKX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="BthZFF5gb3r5yrQPi5Rfrk"><polyline points="16 18 22 12 16 6" data-page-node-id="Mk20MM94iZVBLqdNASb2ZK"/><polyline points="8 6 2 12 8 18" data-page-node-id="6uYHbXyGXor2wCUn2OBsdv"/></svg></div>
+            <span class="info-label" data-page-node-id="nkg84gT3i4iMi8wxaEmiTc">专业</span><span class="info-value" data-page-node-id="AB0vtEbjvlTtjl2DK181IR">计算机科学与技术</span>
+          </div>
+          <div class="info-row" data-page-node-id="WtSrXuw4L8hdOCqib1JeFW">
+            <div class="info-icon" data-page-node-id="ls0Sc8nCnS7pXPmRJEZQDZ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="kEMsdXZHORdPUbPQEKLhPZ"><path d="M9 18V5l12-2v13" data-page-node-id="nZvpXAisuLLXS0maatb3gY"/><circle cx="6" cy="18" r="3" data-page-node-id="pzGIZdbHVCmbaIxawmoxIs"/><circle cx="18" cy="16" r="3" data-page-node-id="AEWSmdt1DNRV5YV5ivHyba"/></svg></div>
+            <span class="info-label" data-page-node-id="SCnxCLwXfdsGtC3NwO1liE">特长</span><span class="info-value" data-page-node-id="JiiKICxh4pqndwu6MG1LTs">舞蹈</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════ 个人特质 ═════════════════ -->
+  <section id="traits" data-page-node-id="lLgPAzTVHOSlC0GDKZNw1E">
+    <div class="container" data-page-node-id="L0rAMUc7mVDgUMYMRidkVz">
+      <div class="section-head reveal" data-page-node-id="C3iA3AB1eF2YUfd0mNTuiy">
+        <span class="section-tag" data-page-node-id="D3FE9br3JpHuqNypFecsDe">// 个人特质</span>
+        <h2 data-page-node-id="5uKmqtVjBzVDrgkr4bU7RY">我是一个怎样的人</h2>
+        <p data-page-node-id="UHeXEdjkCaaBCponj3HNJX">认真 · 高效 · 钻研，还有舞台上的另一面</p>
+      </div>
+      <div class="traits-grid" data-page-node-id="gK3WFAf7APx690lkPTSXHv">
+        <div class="trait-card reveal" data-page-node-id="uMyHkg4pCT6Cg3Bh6ILzcA">
+          <div class="trait-icon" data-page-node-id="xqTvHzsywZYJcrTLQfnKWN"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="Aarc6Hg0qwRPMbaLzP0sT5"><circle cx="12" cy="12" r="10" data-page-node-id="xhfRXS4iHAp1njOhJc0eJz"/><path d="M8 12.5l2.5 2.5L16 9.5" data-page-node-id="P9TKmWnIbCi5wEotaBGDrP"/></svg></div>
+          <h3 data-page-node-id="Gh8w2F1ysHeMSRVaPuciwT">认真负责</h3>
+          <p data-page-node-id="nE7PA21ssAW8iRdTpEXkkL">接手的每一件事都善始善终，注重细节，交付前反复检查。答应的事情，一定做到。</p>
+        </div>
+        <div class="trait-card reveal" data-delay="1" data-page-node-id="C5BPE7uDxKLYh22P4oYPav">
+          <div class="trait-icon" data-page-node-id="fjhfQyqtzNtuc0A9vURfGS"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="VbYdA5eFFMCJm9RvP79Cfh"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" data-page-node-id="A8hQp1Or6PBKrRemthb8Jk"/></svg></div>
+          <h3 data-page-node-id="YG8ciMubMPoGxuQpmXyCBX">执行高效</h3>
+          <p data-page-node-id="3nFqsqvJAcVlhIh4ciO9Z8">合理拆解任务、规划时间，优先级清晰。同样的事情，我能更快、更稳地完成。</p>
+        </div>
+        <div class="trait-card reveal" data-delay="2" data-page-node-id="PaM3e8ofjtuFo7CcNB3lSr">
+          <div class="trait-icon" data-page-node-id="uU2drEHEtKhFG4H5Kb8eHD"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="hFAgpEdTCjnCdruKYVozfV"><circle cx="11" cy="11" r="7" data-page-node-id="BIW4BuFzfpEjtmjP4UEQk4"/><line x1="21" y1="21" x2="16.5" y2="16.5" data-page-node-id="2HPIMqB3AEwLctFdnW8KQ0"/><line x1="11" y1="8" x2="11" y2="14" data-page-node-id="Cwycyvet1tgvroVVKPZllZ"/><line x1="8" y1="11" x2="14" y2="11" data-page-node-id="GZrshRMuaIr4m9Pli7brVj"/></svg></div>
+          <h3 data-page-node-id="JiuNKUdv9f4PEj8rEqvlTn">肯钻研</h3>
+          <p data-page-node-id="BznuGNX25q2fTYXLD7fsXU">遇到问题刨根问底：查文档、翻源码、做实验。享受从「不会」到「搞懂」的过程。</p>
+        </div>
+      </div>
+      <div class="dance-banner reveal" data-delay="1" data-page-node-id="s1UT7JUQpMPFnq2M2LAmEY">
+        <div class="dance-icon" data-page-node-id="cfTSnFHmaSXwpVzHWCiHE5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="vDspXt1nny9nvPbAVo0q7J"><path d="M9 18V5l12-2v13" data-page-node-id="HkJHvCLdmrYCTzUGTOS26J"/><circle cx="6" cy="18" r="3" data-page-node-id="G2YVVSWGLGcZQkz8WNPiqS"/><circle cx="18" cy="16" r="3" data-page-node-id="HpNeHROk14hy7w7epHCcCY"/></svg></div>
+        <div class="dance-body" data-page-node-id="jsLoLRQiNLEAAQUaahxwPh">
+          <h3 data-page-node-id="GXHi8p7IOINCThnmEfN69r">舞台上的我 —— 舞蹈特长</h3>
+          <p data-page-node-id="z6BTiVJ9PfACWPvNefvekP">从日常排练到校园晚会，舞蹈是我表达自我的方式。它教会我的坚持、节奏感和团队协作，同样用在了写代码的路上。</p>
+        </div>
+        <div class="dance-tags" data-page-node-id="u9htK3eHEahc7jQQ1cW4jT">
+          <span data-page-node-id="8HTgkWRsHkuOy1qj1myxHK">节奏感</span><span data-page-node-id="DkcWwuydAKPHr95THLE4Ty">舞台表现力</span><span data-page-node-id="s311KJr51LVEsrCrJUjv7S">团队协作</span><span data-page-node-id="PlGENGL4hT7ZgsNoJxJJC1">坚持自律</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════ 技能特长 ═════════════════ -->
+  <section id="skills" data-page-node-id="JIYeWt4EuTWiyzqV2ELwnz">
+    <div class="container" data-page-node-id="bK3tThSHOrFwK0ffUEa0WF">
+      <div class="section-head reveal" data-page-node-id="Rn2hrSaCDgFspHbjrwmi5G">
+        <span class="section-tag" data-page-node-id="Acq6KRuEdjJv0GA8tAFVcL">// 技能特长</span>
+        <h2 data-page-node-id="9ExeN4WHlAnzSwD8VDowHS">我会些什么</h2>
+        <p data-page-node-id="9olbfAXxtB1NmWAvezD4Wl">持续学习中的技术栈与综合能力</p>
+      </div>
+      <div class="skills-grid" data-page-node-id="yXcDlsA66rMnfm4sGVe535">
+        <div class="skills-bars reveal" data-page-node-id="3DVYiQXldHEe8LkvzPEKjz">
+          <div class="skill" data-percent="85" data-page-node-id="TVQ1pkfQsYijTKdbiyMlXN">
+            <div class="skill-head" data-page-node-id="mjhuDZ9Xs3TJ3RCFrsSM62"><span data-page-node-id="9NOJf94YLQKnCOAhJwE2VE">C / C++</span><span class="skill-num" data-page-node-id="1aLeAcQw7ila7Ex6KwTS7K">85%</span></div>
+            <div class="skill-bar" data-page-node-id="mcQ6mtDgWCncOLDw3zAMU3"><i data-page-node-id="c5UOyYyQ2I5Do7ALo3S6Xv"></i></div>
+          </div>
+          <div class="skill" data-percent="80" data-page-node-id="ZqjL9YOGTGppzyCBdAyFtS">
+            <div class="skill-head" data-page-node-id="207IlFDajsKgjabQEYXX0u"><span data-page-node-id="HOI7q84mwSpiy11nJCzjIt">Java</span><span class="skill-num" data-page-node-id="itC6xvmj3jFA1HnwBNcFxF">80%</span></div>
+            <div class="skill-bar" data-page-node-id="StnoE3UTbmNlWUxXEX9Jxw"><i data-page-node-id="LJ3iEOSeOwtVPSkO4d2OCA"></i></div>
+          </div>
+          <div class="skill" data-percent="88" data-page-node-id="7kpuxxYUUXkQq6RUQpGVga">
+            <div class="skill-head" data-page-node-id="rjThtF1PLsERHF3iQcnNUT"><span data-page-node-id="bPyo21Rr35ZnHgbFW2zznO">HTML / CSS / JavaScript</span><span class="skill-num" data-page-node-id="hTBW5ypVkHJfUlEJHPTboo">88%</span></div>
+            <div class="skill-bar" data-page-node-id="WSPl94LomkvjTvXpyKGDPm"><i data-page-node-id="frHorqHs0cUrVvRmluz00W"></i></div>
+          </div>
+          <div class="skill" data-percent="82" data-page-node-id="dNxHtMp4oS1Ps0tNHpYMYN">
+            <div class="skill-head" data-page-node-id="V1EvlDRPXG6xm1gi9YHAa8"><span data-page-node-id="GGDfVaSWxIPNiapEVU76au">Python</span><span class="skill-num" data-page-node-id="93JZshVeO0fLBaOCW1rBuk">82%</span></div>
+            <div class="skill-bar" data-page-node-id="FwOw0MD9ZmHEQT6xf9SJJw"><i data-page-node-id="Jmm8QvLAdf5h4z7K7AMOHU"></i></div>
+          </div>
+          <div class="skill" data-percent="75" data-page-node-id="U6tcZfV7usJb8JKSzymJNu">
+            <div class="skill-head" data-page-node-id="pa7FtVT1RRG2NeBej32cmw"><span data-page-node-id="M2g5sMvQ38cHkdBBQIueXT">MySQL 数据库</span><span class="skill-num" data-page-node-id="RVlH0mM9p7tO6kv9WdjIT1">75%</span></div>
+            <div class="skill-bar" data-page-node-id="MZKH4XgqC8gI6HRD9EMHMj"><i data-page-node-id="SFUz1SJ9p4uyCopF61fTJg"></i></div>
+          </div>
+          <div class="skill" data-percent="78" data-page-node-id="3WZn5y2PycxPVdlJIKgk95">
+            <div class="skill-head" data-page-node-id="hZ12K1KFlBWRl4mp72zQvw"><span data-page-node-id="lYUVuiwTgCMIb51MdRgue4">Git / Linux</span><span class="skill-num" data-page-node-id="JaB3DmPDikJbNHrOfbCA88">78%</span></div>
+            <div class="skill-bar" data-page-node-id="bMECcwM4gLHD20oLM2NQhh"><i data-page-node-id="Ul0cSb60ujMedc7awHvK4K"></i></div>
+          </div>
+        </div>
+        <div class="skill-panel reveal" data-delay="1" data-page-node-id="eYXJRfYdYqSNuca8H5jWSg">
+          <h3 data-page-node-id="IEDYOldBVjNYCyWv8EG42X"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="nAQljV1X4NSz77etQEimtu"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" data-page-node-id="qr1NkCWmK0fwtNpsS8k1wc"/></svg>知识与能力方向</h3>
+          <div class="tag-cloud" data-page-node-id="RqXsx7MEb2dKRLcHvw4tmB">
+            <span class="highlight" data-page-node-id="sL2om6200GTWicMAGhQ7rZ">舞蹈（特长）</span>
+            <span data-page-node-id="lRTC7FIFXjYFj2lOTDN4HN">数据结构与算法</span>
+            <span data-page-node-id="J093jLcupsrkFPkHeJ6FP9">计算机网络</span>
+            <span data-page-node-id="4hCSfl9IHYZxQp0gbXPCau">操作系统</span>
+            <span data-page-node-id="tCTyJBBfNoUhOEeCBSrJwt">数据库原理</span>
+            <span data-page-node-id="qY10IddWFAuJh7a3HcqYPx">前端开发</span>
+            <span data-page-node-id="xmpASvk7vyi7lFdK3dFevb">后端开发</span>
+            <span data-page-node-id="uQulR1erbeE9Js2UtUFUUK">Office 办公</span>
+            <span data-page-node-id="E0czei5zsC6wkw2UWWJ3LP">Markdown 文档</span>
+          </div>
+          <div class="panel-divider" data-page-node-id="550BBqlztePSwIPfBj2GJk"></div>
+          <ul class="soft-list" data-page-node-id="eQpej5D4mrDJsT1HvA2xBl">
+            <li data-page-node-id="u0NyJJdkCZHGZR9WmmlHDC"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="GrnyZbrutKwf9IGs5eJICg"><polyline points="20 6 9 17 4 12" data-page-node-id="XeHsO1Ve3sl0JJHK1joF14"/></svg><span data-page-node-id="aUm3s8HZhWBjRfT1AZcVdF"><b data-page-node-id="9zWuxzx2kO1Vnw8rRKk5Wk">责任心强</b>——团队作业里永远是靠谱的那一个</span></li>
+            <li data-page-node-id="ALKHry8fB2aZtuGShcRyQ7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="yl1MBt9VTRrtiKuxnAeTRI"><polyline points="20 6 9 17 4 12" data-page-node-id="7Pd7aspivmiFT7mLwGuZlk"/></svg><span data-page-node-id="tA1n9ay9KzfFdbmtbAQzV4"><b data-page-node-id="efH7ClSq6yg40uFAJGP03c">自驱力足</b>——课余时间主动学习新技术、新框架</span></li>
+            <li data-page-node-id="y7NFFHEBilHGU1c5vFy5GO"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="dt1R8PcbtrXcs9rjiXTFby"><polyline points="20 6 9 17 4 12" data-page-node-id="RaBXxZHIoGqMnjT8X3v1HF"/></svg><span data-page-node-id="AMS6dRmEvMF1wOwhPAlPKN"><b data-page-node-id="za3KIXDB0tymhJ87mYAzin">抗压性好</b>——期末、排练、开发三线并行也能稳住</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════ 项目作品 ═════════════════ -->
+  <section id="projects" data-page-node-id="rCEBGoS4YIYROW46N96T8V">
+    <div class="container" data-page-node-id="PPd8A1fMEBRchQPQ4Vhd8D">
+      <div class="section-head reveal" data-page-node-id="uLnUmwGCAArvdAPEXnN5l9">
+        <span class="section-tag" data-page-node-id="wjVU1kcXxwA0OamfnXipfq">// 项目作品</span>
+        <h2 data-page-node-id="7ZpmDZddkr9pbYUbhZDoMa">我做过的项目</h2>
+        <p data-page-node-id="C5WnOHAi12f5fmbVOsxoB5">每一条都是认真完成的作品，持续更新中</p>
+      </div>
+      <div class="filter-bar reveal" id="filterBar" data-page-node-id="sA11xWZg9mvwm5ehIeGiwF">
+        <button class="filter-btn active" data-filter="all" data-page-node-id="q7HlKWQObQJ4DgABp7S7Rr">全部</button>
+        <button class="filter-btn" data-filter="web" data-page-node-id="ad6fGN4RTTm1Z3lttqSbmq">Web 开发</button>
+        <button class="filter-btn" data-filter="mini" data-page-node-id="911sp1rct6Ruc6fCntqwHz">小程序</button>
+        <button class="filter-btn" data-filter="data" data-page-node-id="wcm9uA2qqGnHwhjNEBnX7E">数据可视化</button>
+        <button class="filter-btn" data-filter="tool" data-page-node-id="4MVdtNyV3GQ5jxUy8wKnj3">工具 / 其他</button>
+      </div>
+      <!-- 项目列表由下方 JS 中的 PROJECTS 数组渲染，添加项目只需在数组中加一项 -->
+      <div class="projects-grid" id="projectsGrid" data-page-node-id="4HRciKUOP6Jdu4JfrNfg5L"></div>
+      <p class="projects-note" data-page-node-id="SCgp6TRyvkBUHOfo730eCl">更多项目正在路上，敬请期待</p>
+    </div>
+  </section>
+
+  <!-- ═════════════════ 联系我 ═════════════════ -->
+  <section id="contact" data-page-node-id="pIFlVMBjK9IseCMefZcnax">
+    <div class="container" data-page-node-id="qzT6rL3HHot1SSmkK5n5PD">
+      <div class="section-head reveal" data-page-node-id="1LtlDy4mF3ZTfTuTVxeWa4">
+        <span class="section-tag" data-page-node-id="cQBobp4KpW7ZyvNi675rP0">// 联系我</span>
+        <h2 data-page-node-id="qWRUSHaYj7BwmB0jd6yzgt">和我聊聊吧</h2>
+        <p data-page-node-id="3u5uMVf9aDnAD827eWnbRy">项目合作 · 技术交流 · 舞蹈交友，都欢迎</p>
+      </div>
+      <div class="contact-cards" data-page-node-id="BnBXwHje0LzByMQHl0MGra">
+        <!-- 改这里：替换成你的真实联系方式 -->
+        <div class="contact-card reveal" data-page-node-id="8L3zzUCGmaEBBrwzQ5PqyJ">
+          <div class="contact-icon" data-page-node-id="4qBtkJL6NRM7Dkt00uwSwv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="p2LN19LjQaPks0zpMPe2rX"><rect x="2" y="4" width="20" height="16" rx="2" data-page-node-id="g2YS0DQLrzviAjSDoKxhHJ"/><path d="M22 6l-10 7L2 6" data-page-node-id="A512mybgDeLdtqYGOuDx52"/></svg></div>
+          <h4 data-page-node-id="DAjVzhChsBtGhBtDzK8Iw8">邮箱</h4><p data-page-node-id="hZh9DBu9DQXsGqhGE1VjAO">17717920384@163.com</p>
+        </div>
+        <div class="contact-card reveal" data-delay="1" data-page-node-id="MR5WqdIAMD49e6WzbB5fLF">
+          <div class="contact-icon" data-page-node-id="TJ0ezpOS5Hv3oZuTs0kFYp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="zqSOc0qYcTh3A908o19kwI"><polyline points="16 18 22 12 16 6" data-page-node-id="rhaYdEHQr5EpTa0Zilrj3l"/><polyline points="8 6 2 12 8 18" data-page-node-id="6YZxxp0t0cC4dYCnjzRmfu"/></svg></div>
+          <h4 data-page-node-id="VqQqseJU9MoqtAkq1j6UIg">GitHub</h4><p data-page-node-id="51VRRy7s5EilZxZEQbrKp1">github.com/Needyii</p>
+        </div>
+        <div class="contact-card reveal" data-delay="2" data-page-node-id="yBpYbBc8FbBCV1aNTy1OE8">
+          <div class="contact-icon" data-page-node-id="onE5NZB3ByP8QMVG4url6t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="YlRzXmEQp6cD4yYB2fPMe8"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5c4.7 0 8.5 3.8 8.5 8.5z" data-page-node-id="VXjXuxDN2AYkebzKkWbUMD"/></svg></div>
+          <h4 data-page-node-id="n2HGUVMcUyXnQ1hRoumcsx">微信</h4><p data-page-node-id="ALNrCPiGr2gc3e2qj27OKL">ovoeLarrrs0828</p>
+        </div>
+        <div class="contact-card reveal" data-delay="3" data-page-node-id="iFj4CqIsx1HJ57D4Q56nbN">
+          <div class="contact-icon" data-page-node-id="V84nYBjgPM3G9Fm1WYfpld"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="z1PmTORli54EcN03VdEcer"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" data-page-node-id="SZ2FDPLfcaGGx1yT6YvGw2"/><circle cx="12" cy="10" r="3" data-page-node-id="BHjy0yEq3zCFkz0M46oNe8"/></svg></div>
+          <h4 data-page-node-id="87ezWYwGgjIMoJSZGFYAC2">坐标</h4><p data-page-node-id="TCKzrlDN43RIrTchVGoddn">上海 · 随时在线</p>
+        </div>
+      </div>
+      <div class="contact-cta reveal" data-page-node-id="9KHNCwYBuGaq9p9XEiet0A">
+        <p data-page-node-id="e2KHeww4oX3E5CBAmVe8sn">如果你也对技术、项目合作或者舞蹈感兴趣，欢迎随时找我交流。</p>
+        <a class="btn btn-primary" href="mailto:17717920384@163.com" data-page-node-id="NHc4AsJIJyChchSSYEVZjA">给我发邮件</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer data-page-node-id="AHjTlByYbaysR7DbksEauJ">
+  <div class="container" data-page-node-id="xUGiUuLNAEa6MxkA993bd2">
+    © 2026 Needyii · 上海杉达学院 计算机科学与技术 · 用 <span class="heart" data-page-node-id="GC1JPTzqaoshQBCjXjTUVF">热爱</span> 与代码打造
+  </div>
+</footer>
+
+<button id="backTop" aria-label="回到顶部" data-page-node-id="CWiaRS2iWPcRwwqgdxnMwd">↑</button>
+
+<script>
+  /* ═══════════════════════════════════════════════════════════
+     自定义区域：项目数据
+     添加 / 修改项目：直接在下面的数组里增删对象即可
+     category 可选值：web(网页开发) / mini(小程序) / data(数据可视化) / tool(工具其他)
+     ═══════════════════════════════════════════════════════════ */
+  const PROJECTS = [
+    {
+      title: "个人博客系统",
+      type: "Web 开发",
+      category: "web",
+      cover: "g1",
+      desc: "从零搭建的个人博客，支持 Markdown 写作、文章分类与标签管理，前后端分离架构，独立完成部署上线。",
+      tags: ["HTML/CSS/JS", "Node.js", "Express", "MySQL"],
+      links: [{ text: "查看源码", url: "#" }]
+    },
+    {
+      title: "校园二手交易平台",
+      type: "Web 开发",
+      category: "web",
+      cover: "g2",
+      desc: "面向校园场景的二手物品交易平台，实现商品发布、搜索筛选、站内私信与订单管理，担任组长并负责核心模块开发。",
+      tags: ["Vue", "Spring Boot", "MySQL", "Redis"],
+      links: [{ text: "查看源码", url: "#" }, { text: "在线预览", url: "#" }]
+    },
+    {
+      title: "天气查询小程序",
+      type: "小程序",
+      category: "mini",
+      cover: "g3",
+      desc: "调用第三方天气 API 的微信小程序，支持多城市添加、未来 7 天预报与天气预警提醒，界面简洁易用。",
+      tags: ["微信小程序", "WXML/WXSS", "第三方 API"],
+      links: [{ text: "查看源码", url: "#" }]
+    },
+    {
+      title: "学习数据可视化仪表盘",
+      type: "数据可视化",
+      category: "data",
+      cover: "g4",
+      desc: "对个人学习时长与专注度数据进行采集分析，用 ECharts 生成趋势图、热力图等多维图表，辅助时间管理。",
+      tags: ["Python", "Pandas", "ECharts"],
+      links: [{ text: "查看源码", url: "#" }]
+    },
+    {
+      title: "学生成绩管理系统",
+      type: "工具 / 其他",
+      category: "tool",
+      cover: "g5",
+      desc: "基于 Java 与 MySQL 的课程设计作品，覆盖成绩录入、查询、统计分析与权限管理，代码规范、注释完整。",
+      tags: ["Java", "Swing", "JDBC", "MySQL"],
+      links: [{ text: "查看源码", url: "#" }]
+    },
+    {
+      title: "AI 智能问答助手",
+      type: "工具 / 其他",
+      category: "tool",
+      cover: "g6",
+      desc: "接入大模型 API 的桌面问答工具，支持多轮对话、历史记录保存与快捷指令，持续探索 AI 应用开发。",
+      tags: ["Python", "LLM API", "Tkinter"],
+      links: [{ text: "查看源码", url: "#" }]
+    }
+  ];
+
+  /* ---------- 渲染项目卡片 ---------- */
+  const grid = document.getElementById("projectsGrid");
+  function renderProjects(filter) {
+    grid.innerHTML = "";
+    PROJECTS.forEach((p, idx) => {
+      if (filter !== "all" && p.category !== filter) return;
+      const linksHtml = p.links.map(l =>
+        '<a href="' + l.url + '" target="_blank" rel="noopener">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+        l.text + "</a>").join("");
+      const tagsHtml = p.tags.map(t => "<span>" + t + "</span>").join("");
+      const card = document.createElement("article");
+      card.className = "project-card pop";
+      card.style.animationDelay = (idx % 3) * 0.08 + "s";
+      card.innerHTML =
+        '<div class="project-cover cover-' + p.cover + '"><span class="cover-letter">' + p.title.charAt(0) + '</span><span class="project-type">' + p.type + '</span></div>' +
+        '<div class="project-body"><h3>' + p.title + '</h3><p>' + p.desc + '</p>' +
+        '<div class="tags">' + tagsHtml + '</div><div class="project-links">' + linksHtml + '</div></div>';
+      grid.appendChild(card);
+    });
+  }
+  renderProjects("all");
+
+  /* ---------- 项目筛选 ---------- */
+  document.getElementById("filterBar").addEventListener("click", function (e) {
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    this.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderProjects(btn.dataset.filter);
+  });
+
+  /* ---------- 打字机效果 ---------- */
+  const words = ["计算机科学与技术专业学生", "热爱舞台的舞者", "认真高效的开发者", "肯钻研的问题解决者"];
+  const typedEl = document.getElementById("typewriter");
+  let wIdx = 0, cIdx = 0, deleting = false;
+  function typeLoop() {
+    const word = words[wIdx];
+    typedEl.textContent = word.slice(0, cIdx);
+    let delay = deleting ? 40 : 90;
+    if (!deleting && cIdx === word.length) { deleting = true; delay = 1900; }
+    else if (deleting && cIdx === 0) { deleting = false; wIdx = (wIdx + 1) % words.length; delay = 350; }
+    else cIdx += deleting ? -1 : 1;
+    setTimeout(typeLoop, delay);
+  }
+  typeLoop();
+
+  /* ---------- 导航栏：滚动样式 + 当前区块高亮 ---------- */
+  const navbar = document.getElementById("navbar");
+  const navLinks = document.getElementById("navLinks");
+  const links = navLinks.querySelectorAll("a");
+  const sections = [...document.querySelectorAll("section[id]")];
+  function onScroll() {
+    navbar.classList.toggle("scrolled", window.scrollY > 30);
+    document.getElementById("backTop").classList.toggle("show", window.scrollY > 600);
+    const pos = window.scrollY + 140;
+    let current = sections[0] && sections[0].id;
+    sections.forEach(s => { if (s.offsetTop <= pos) current = s.id; });
+    links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + current));
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- 移动端菜单 ---------- */
+  const hamburger = document.getElementById("hamburger");
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("open");
+    navLinks.classList.toggle("open");
+  });
+  links.forEach(a => a.addEventListener("click", () => {
+    hamburger.classList.remove("open");
+    navLinks.classList.remove("open");
+  }));
+
+  /* ---------- 滚动淡入动画 ---------- */
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.add("in-view"); revealObserver.unobserve(en.target); }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+
+  /* ---------- 数字滚动动画 ---------- */
+  const countObserver = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      countObserver.unobserve(en.target);
+      const el = en.target;
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || "";
+      const dur = 1400, t0 = performance.now();
+      function tick(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll(".stat .num").forEach(el => countObserver.observe(el));
+
+  /* ---------- 技能条动画 ---------- */
+  const skillObserver = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      skillObserver.unobserve(en.target);
+      en.target.querySelectorAll(".skill").forEach((s, i) => {
+        setTimeout(() => { s.querySelector(".skill-bar i").style.width = s.dataset.percent + "%"; }, i * 120);
+      });
+    });
+  }, { threshold: 0.3 });
+  const barsWrap = document.querySelector(".skills-bars");
+  if (barsWrap) skillObserver.observe(barsWrap);
+
+  /* ---------- 回到顶部 ---------- */
+  document.getElementById("backTop").addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+</body>
+</html>
